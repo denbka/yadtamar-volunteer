@@ -1,5 +1,6 @@
+import classNames from "classnames";
 import { DateTime } from "luxon";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getProgress, getTasks, getUserData, updateTask } from "./api";
 import { Modal } from "./components/Modal";
 import { TaskItem } from "./components/TaskItem";
@@ -23,14 +24,18 @@ const setProgressHeader = (progress) => {
 };
 
 function App() {
+  const [currentLanguage, setCurrentLanguage] = useState("en");
   const [progress, setProgress] = useState(0);
   const [tasks, setTasks] = useState([]);
   const [modalContent, setModalContent] = useState(null);
   const [userData, setUserData] = useState(null);
 
+  const isRtl = useMemo(() => currentLanguage === "heb", [currentLanguage]);
+
   useEffect(() => {
     getUserData().then((res) => setUserData(res));
   }, []);
+
   useEffect(() => {
     const weeks = {};
     getTasks().then((res) => {
@@ -83,13 +88,36 @@ function App() {
     );
   };
 
+  const changeLanguage = (lang) => {
+    setCurrentLanguage(lang);
+    localeStrings.setLanguage(lang);
+  };
+
   return (
     <div className="body">
       {userData && (
-        <div className="header">
+        <div className={classNames({ header: true, rtl: isRtl })}>
           <div className="title">
-            {localeStrings.hello} {userData?.name}!
+            <span>
+              {localeStrings.hello} {userData?.name}!
+            </span>
+            <div className={classNames({ "set-locale": true, rtl: isRtl })}>
+              <span>{localeStrings.language}</span>
+              <button
+                className={classNames({ active: currentLanguage === "en" })}
+                onClick={() => changeLanguage("en")}
+              >
+                EN
+              </button>
+              <button
+                className={classNames({ active: currentLanguage === "heb" })}
+                onClick={() => changeLanguage("heb")}
+              >
+                HEB
+              </button>
+            </div>
           </div>
+
           <div className="progress__container">
             <div className="progress__container header-progress">
               <div id="middle-circle" className="header-middle-circle"></div>
@@ -104,7 +132,7 @@ function App() {
       <div className="task-list">
         {Object.entries(tasks).map(([week, tasks]) => (
           <div className="date">
-            <div className="date__container">
+            <div className={classNames({ date__container: true, rtl: isRtl })}>
               <div className="date__title">{week}</div>
               <div className="date__icon">
                 <svg width="21" height="21" viewBox="0 0 21 21" fill="none">
@@ -142,8 +170,9 @@ const getStatus = (data) => {
 };
 
 const ModalTodo = ({ data, onUpdate }) => {
+  const isRtl = localeStrings.getLanguage() === "heb";
   return (
-    <div className="modal__task">
+    <div className={classNames({ modal__task: true, rtl: isRtl })}>
       <div className="modal__task__status">{getStatus(data)}</div>
       <div className="modal__task__title">{data.task_name}</div>
       <div className="modal__task__date">

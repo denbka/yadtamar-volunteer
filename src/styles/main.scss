@@ -25,6 +25,35 @@ body {
   justify-content: space-between;
   background: $darkBlue;
   @include container;
+
+  &.rtl {
+    flex-direction: row-reverse;
+    text-align: right;
+  }
+
+  .title {
+    display: grid;
+    row-gap: 0.5rem;
+
+    .set-locale {
+      display: flex;
+      font-size: 12px;
+
+      &.rtl {
+        flex-direction: row-reverse;
+      }
+
+      button {
+        background: transparent;
+        border: 0;
+        color: #fff;
+        position: relative;
+        &.active {
+          border-bottom: 1px solid rgb(243, 194, 106);
+        }
+      }
+    }
+  }
 }
 
 .task-list {
@@ -33,28 +62,40 @@ body {
 }
 
 .task {
-  display: grid;
-  grid-template-columns: 5fr 1fr;
-  column-gap: 1rem;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 1rem;
   position: relative;
+  &.rtl {
+    flex-direction: row-reverse;
+    .task__title {
+      align-items: flex-end;
+    }
+  }
 
   &__status {
-    font-size: 12px;
-    margin-top: 3px;
+    font-size: 10px;
   }
   &__title {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    line-height: 1rem;
+    flex: 5;
     background: $green;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
     border-radius: 14px;
     padding: 15px 20px;
     font-size: 16px;
-    align-items: center;
     font-weight: 700;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
   &__time {
+    flex: 1;
     background: #6587cb;
     border: 2px solid $green;
     border-radius: 14px;
@@ -76,6 +117,13 @@ body {
     align-items: center;
     justify-content: space-between;
     margin-bottom: 9px;
+    &.rtl {
+      flex-direction: row-reverse;
+      .date__icon {
+        margin-right: 0;
+        margin-left: 35px;
+      }
+    }
   }
   &__title {
     font-size: 29px;
@@ -128,6 +176,11 @@ body {
     background: #fff;
     border-radius: 16px;
     padding: 26px 35px;
+    display: flex;
+    flex-direction: column;
+    &.rtl {
+      align-items: flex-end;
+    }
     &__status {
       color: #6587cb;
     }
@@ -155,6 +208,7 @@ body {
     }
     .task__title {
       text-align: center;
+      align-self: center;
       margin: 0;
     }
   }
