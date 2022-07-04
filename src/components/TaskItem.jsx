@@ -1,4 +1,5 @@
 import { DateTime } from "luxon";
+import { localeStrings } from "../locales";
 
 export const TaskItem = ({ item, list, index, onClick }) => {
   return (
@@ -17,9 +18,9 @@ export const TaskItem = ({ item, list, index, onClick }) => {
       </div>
       <span className="task__status">
         {item.helper_id && !item.was_completed
-          ? " (in work)"
+          ? localeStrings.in_work
           : item.was_completed
-          ? "Task was completed"
+          ? localeStrings.was_completed
           : ""}
       </span>
     </div>

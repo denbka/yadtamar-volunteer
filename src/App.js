@@ -3,113 +3,7 @@ import { useEffect, useState } from "react";
 import { getProgress, getTasks, getUserData, updateTask } from "./api";
 import { Modal } from "./components/Modal";
 import { TaskItem } from "./components/TaskItem";
-import { getQueryParams } from "./utils";
-
-// const getStatus = (currentTask) => {
-//   if (currentTask.helper_id && currentTask.was_completed) {
-//     return "Job was completed";
-//   }
-//   return !currentTask?.helper_id ? "Not taken" : "In work";
-// };
-
-// window.addEventListener("load", async () => {
-//   const modal = document.querySelector(".modal__content");
-//   const modalOverlay = document.querySelector(".modal");
-//   const list = document.querySelector(".task-list");
-
-//   const toggleModal = (index, isSuccess) => {
-//     modal.innerHTML = "";
-//     // if (isSuccess) {
-//     //   // <!-- <div class="modal__progress">
-//     //   //               <div class="modal__progress__title">Good Job!</div>
-//     //   //               <div class="progress__container">
-//     //   //                   <div id="middle-circle" class="modal-middle-circle"></div>
-//     //   //                   <div id="progress-spinner" class="modal-progress-spinner"></div>
-//     //   //               </div>
-//     //   //           </div> -->
-//     //   return;
-//     // }
-//     if (!index) {
-//       modalOverlay.classList.toggle("hidden");
-//       return;
-//     }
-//     const task = createElement("div", "modal__task");
-//     const status = createElement(
-//       "div",
-//       "modal__task__status",
-//       getStatus(tasks[index])
-//     );
-//     const title = createElement(
-//       "div",
-//       "modal__task__title",
-//       tasks[index].task_name
-//     );
-//     const date = createElement(
-//       "div",
-//       "modal__task__date",
-//       DateTime.fromSeconds(Number(tasks[index].date)).toLocaleString()
-//     );
-//     const divider = createElement("hr", "divider");
-//     const description = createElement(
-//       "div",
-//       "modal__task__description",
-//       tasks[index].comments
-//     );
-//     const updateButton = createElement(
-//       "div",
-//       "task__title",
-//       tasks[index].helper_id ? "Complete the task" : "Take the task"
-//     );
-//     updateButton.addEventListener("click", () => updateTask(index));
-
-//     task.append(title);
-//     task.append(status);
-//     task.append(date);
-//     task.append(divider);
-//     task.append(description);
-//     task.append(updateButton);
-//     modal.append(task);
-
-//     modalOverlay.classList.toggle("hidden");
-//   };
-
-//   modalOverlay.addEventListener("click", () => toggleModal());
-
-//   modal.addEventListener("click", (e) => e.stopPropagation());
-
-//   const { token, family_id, user_id } = getQueryParams();
-//   helper_id = user_id;
-//   try {
-//     tasks = await fetch(
-//       `https://tamar.project-babaev.ru/api/tasks/tasks-for-family/${family_id}`,
-//       {
-//         headers: {
-//           Authorization: token,
-//         },
-//       }
-//     ).then((res) => res.json());
-
-//     tasks.map((item, index) => {
-//       const date = luxon.DateTime.fromSeconds(Number(item.date)).toLocaleString(
-//         luxon.DateTime.TIME_SIMPLE
-//       );
-
-//       addTaskToHTML({ ...item, date }, list, index);
-//     });
-
-//     document.querySelectorAll(".task").forEach((title) => {
-//       if (title.classList.contains("task-completed")) return;
-//       title.addEventListener("click", (e) => {
-//         toggleModal(e.target.attributes["data-id"].value);
-//       });
-//     });
-
-//     setProgressHeader();
-//     setProgressTask();
-//   } catch (e) {
-//     list.innerHTML = "no tasks for this family";
-//   }
-// });
+import { localeStrings } from "./locales";
 
 const setProgressTask = (progress) => {
   if (!document.querySelector(".modal-progress-spinner")) return;
@@ -129,7 +23,6 @@ const setProgressHeader = (progress) => {
 };
 
 function App() {
-  const dates = [{ date: 12523089431, todos: [] }];
   const [progress, setProgress] = useState(0);
   const [tasks, setTasks] = useState([]);
   const [modalContent, setModalContent] = useState(null);
@@ -168,14 +61,15 @@ function App() {
   }, [modalContent]);
 
   useEffect(() => {
+    if (!userData) return;
     setProgressTask(progress);
     setProgressHeader(progress);
-  }, [progress]);
+  }, [progress, userData]);
 
   const handleUpdate = (data) => {
     updateTask(data, userData?.helper_name).then((item) =>
       setModalContent(
-        <ModalSuccess data={item}>Success. Task in work!</ModalSuccess>
+        <ModalSuccess data={item}>{localeStrings.success}</ModalSuccess>
       )
     );
   };
@@ -191,18 +85,22 @@ function App() {
 
   return (
     <div className="body">
-      <div className="header">
-        <div className="title">Hello, {userData?.name}!</div>
-        <div className="progress__container">
-          <div className="progress__container header-progress">
-            <div id="middle-circle" className="header-middle-circle"></div>
-            <div
-              id="progress-spinner"
-              className="header-progress-spinner"
-            ></div>
+      {userData && (
+        <div className="header">
+          <div className="title">
+            {localeStrings.hello} {userData?.name}!
+          </div>
+          <div className="progress__container">
+            <div className="progress__container header-progress">
+              <div id="middle-circle" className="header-middle-circle"></div>
+              <div
+                id="progress-spinner"
+                className="header-progress-spinner"
+              ></div>
+            </div>
           </div>
         </div>
-      </div>
+      )}
       <div className="task-list">
         {Object.entries(tasks).map(([week, tasks]) => (
           <div className="date">
@@ -238,9 +136,9 @@ function App() {
 
 const getStatus = (data) => {
   if (data.helper_id && data.was_completed) {
-    return "Job was completed";
+    return localeStrings.was_completed;
   }
-  return !data?.helper_id ? "Not taken" : "In work";
+  return !data?.helper_id ? localeStrings.not_taken : localeStrings.in_work;
 };
 
 const ModalTodo = ({ data, onUpdate }) => {
@@ -254,7 +152,9 @@ const ModalTodo = ({ data, onUpdate }) => {
       <hr className="divider" />
       <div className="modal__task__description">{data.comments}</div>
       <div className="task__title" onClick={() => onUpdate(data)}>
-        {data.helper_id ? "Complete the task" : "Take the task"}
+        {data.helper_id
+          ? localeStrings.complete_the_task
+          : localeStrings.take_the_task}
       </div>
     </div>
   );
@@ -263,7 +163,7 @@ const ModalSuccess = ({ children }) => {
   return (
     <div className="modal__progress">
       <div className="modal__progress__title">
-        {children ? children : `Task was completed. Good Job!`}
+        {children ? children : localeStrings.was_completed_gj}
       </div>
       {/* <div className="progress__container">
         <div id="middle-circle" className="modal-middle-circle"></div>
