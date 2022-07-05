@@ -17,10 +17,10 @@ export const getTasks = async () => {
 };
 
 export const getUserData = async () => {
-  const { token } = getQueryParams();
+  const { token, user_id } = getQueryParams();
   try {
     return await fetch(
-      `https://tamar.project-babaev.ru/api/auth/get-user-data`,
+      `https://tamar.project-babaev.ru/api/volunteers/${user_id}`,
       {
         headers: {
           Authorization: token,

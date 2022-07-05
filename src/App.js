@@ -72,7 +72,7 @@ function App() {
   }, [progress, userData]);
 
   const handleUpdate = (data) => {
-    updateTask(data, userData?.helper_name).then((item) =>
+    updateTask(data, userData?.name).then((item) =>
       setModalContent(
         <ModalSuccess data={item}>{localeStrings.success}</ModalSuccess>
       )
