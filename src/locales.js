@@ -12,7 +12,7 @@ export const localeStrings = new LocalizedStrings({
     was_completed_gj: "Task was completed. Good Job!",
     language: "Language:",
   },
-  heb: {
+  "he-IL": {
     success: "Success. Task in work!",
     hello: "1 Hello,",
     was_completed: "Job was completed",
@@ -24,3 +24,5 @@ export const localeStrings = new LocalizedStrings({
     language: ":Language",
   },
 });
+
+localeStrings.setLanguage("he-IL");

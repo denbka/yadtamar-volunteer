@@ -1,3 +1,6 @@
+import "intl";
+import "intl/locale-data/jsonp/en-ZA";
+import "intl/locale-data/jsonp/he-IL";
 import classNames from "classnames";
 import { DateTime } from "luxon";
 import { useEffect, useMemo, useState } from "react";
@@ -24,13 +27,13 @@ const setProgressHeader = (progress) => {
 };
 
 function App() {
-  const [currentLanguage, setCurrentLanguage] = useState("en");
+  const [currentLanguage, setCurrentLanguage] = useState("he-IL");
   const [progress, setProgress] = useState(0);
   const [tasks, setTasks] = useState([]);
   const [modalContent, setModalContent] = useState(null);
   const [userData, setUserData] = useState(null);
 
-  const isRtl = useMemo(() => currentLanguage === "heb", [currentLanguage]);
+  const isRtl = useMemo(() => currentLanguage === "he-IL", [currentLanguage]);
 
   useEffect(() => {
     getUserData().then((res) => setUserData(res));
@@ -48,8 +51,9 @@ function App() {
             .plus({ day: 1 })
             .toMillis() < 0;
         const currentItemWeek = isBeforeNow
-          ? DateTime.fromSeconds(Number(item.date)).toLocaleString()
+          ? DateTime.fromSeconds(Number(item.date)).setLocale(currentLanguage)
           : DateTime.fromSeconds(Number(item.date))
+              .setLocale(currentLanguage)
               .startOf("day")
               .get("weekdayLong");
 
@@ -101,7 +105,7 @@ function App() {
             <span>
               {localeStrings.hello} {userData?.name}!
             </span>
-            <div className={classNames({ "set-locale": true, rtl: isRtl })}>
+            {/* <div className={classNames({ "set-locale": true, rtl: isRtl })}>
               <span>{localeStrings.language}</span>
               <button
                 className={classNames({ active: currentLanguage === "en" })}
@@ -110,12 +114,12 @@ function App() {
                 EN
               </button>
               <button
-                className={classNames({ active: currentLanguage === "heb" })}
-                onClick={() => changeLanguage("heb")}
+                className={classNames({ active: currentLanguage === "he-IL" })}
+                onClick={() => changeLanguage("he-IL")}
               >
                 HEB
               </button>
-            </div>
+            </div> */}
           </div>
 
           <div className="progress__container">
@@ -170,7 +174,7 @@ const getStatus = (data) => {
 };
 
 const ModalTodo = ({ data, onUpdate }) => {
-  const isRtl = localeStrings.getLanguage() === "heb";
+  const isRtl = localeStrings.getLanguage() === "he-IL";
   return (
     <div className={classNames({ modal__task: true, rtl: isRtl })}>
       <div className="modal__task__status">{getStatus(data)}</div>

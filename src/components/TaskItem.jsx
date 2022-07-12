@@ -3,7 +3,8 @@ import { localeStrings } from "../locales";
 import classnames from "classnames";
 
 export const TaskItem = ({ item, list, index, onClick }) => {
-  const isRtl = localeStrings.getLanguage() === "heb";
+  const isRtl = localeStrings.getLanguage() === "he-IL";
+  console.log(localeStrings.getLanguage());
   return (
     <div
       onClick={() => !item.was_completed && onClick(item, item.was_completed)}
@@ -14,7 +15,10 @@ export const TaskItem = ({ item, list, index, onClick }) => {
       })}
       data-id={index}
     >
-      <div className="task__title" data-id={index}>
+      <div
+        className={classnames({ task__title: true, rtl: isRtl })}
+        data-id={index}
+      >
         <div>{item.task_name}</div>
         <span className="task__status">
           {item.helper_id && !item.was_completed
